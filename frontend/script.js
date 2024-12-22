@@ -8,7 +8,7 @@ document.getElementById('imageInput').addEventListener('change', function() {
         const formData = new FormData();
         formData.append('image', file);
 
-        fetch('/', {  // 发送到根路径
+        fetch('/', {
             method: 'POST',
             body: formData
         })
@@ -17,10 +17,8 @@ document.getElementById('imageInput').addEventListener('change', function() {
             if (data.error) {
                 alert(data.error);
             } else {
-                // 设置彩色深度图的 src 为 Base64 数据
-                document.getElementById('colorImage').src = 'data:image/jpeg;base64,' + data.color_image;
-                // 设置灰度深度图的 src 为 Base64 数据
-                document.getElementById('grayImage').src = 'data:image/jpeg;base64,' + data.gray_image;
+                document.getElementById('colorImage').src = data.color_image;
+                document.getElementById('grayImage').src = data.gray_image;
                 document.getElementById('resultSection').style.display = 'block';
             }
         })
@@ -32,36 +30,15 @@ document.getElementById('imageInput').addEventListener('change', function() {
 });
 
 document.getElementById('downloadColor').addEventListener('click', function() {
-    const base64Data = dataURLtoBlob(document.getElementById('colorImage').src);
-    const blob = new Blob([base64Data], { type: 'image/jpeg' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'depth_map_color.jpg';
-    link.click();
-    window.URL.revokeObjectURL(url);
+    const uniqueId = document.getElementById('colorImage').src.split('/').pop().split('.')[0].split('_')[1];
+    window.location.href = `/download_color?id=${uniqueId}`;
 });
 
 document.getElementById('downloadGray').addEventListener('click', function() {
-    const base64Data = dataURLtoBlob(document.getElementById('grayImage').src);
-    const blob = new Blob([base64Data], { type: 'image/jpeg' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'depth_map_gray.jpg';
-    link.click();
-    window.URL.revokeObjectURL(url);
+    const uniqueId = document.getElementById('grayImage').src.split('/').pop().split('.')[0].split('_')[1];
+    window.location.href = `/download_gray?id=${uniqueId}`;
 });
 
-// 辅助函数：将 Data URL 转换为 Blob
-function dataURLtoBlob(dataurl) {
-    const parts = dataurl.split(',');
-    const mime = parts[0].split(':')[1].split(';')[0];
-    const byteCharacters = atob(parts[1]);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-    }
-    const byteArray = new Uint8Array(byteNumbers);
-    return new Blob([byteArray], { type: mime });
-}
+document.getElementById('downloadModel').addEventListener('click', function() {
+    window.location.href = '/download_model';
+});
