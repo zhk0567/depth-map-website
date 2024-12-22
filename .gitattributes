@@ -1,0 +1,2 @@
+*.pt filter=lfs diff=lfs merge=lfs -text
+backend/models/dpt_large_384.pt filter=lfs diff=lfs merge=lfs -text
